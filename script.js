@@ -23,6 +23,9 @@ const clearGistsBtn = document.getElementById('clearGistsBtn');
 const searchGistsBtn = document.getElementById('searchGistsBtn');
 const gistSearchWrap = document.getElementById('gistSearchWrap');
 const gistSearchInput = document.getElementById('gistSearch');
+const savedSearchBtn = document.getElementById('savedSearchBtn');
+const savedGistSearchWrap = document.getElementById('savedGistSearchWrap');
+const savedGistSearchInput = document.getElementById('savedGistSearch');
 const deleteModal = document.getElementById('deleteModal');
 const deleteModalMessage = document.getElementById('deleteModalMessage');
 const deleteModalCancel = document.getElementById('deleteModalCancel');
@@ -140,62 +143,75 @@ function setGistsLoaded(loaded, count) {
     gistsSection.classList.remove('is-visible');
     listEl.innerHTML = '';
     gistsCountEl.textContent = '';
-    closeGistSearch();
+    gistSearch.close();
     renderSavedGists();
   }
 }
 
-function applyGistSearch() {
-  const raw = gistSearchInput.value.trim();
+// Hides cards in `container` that don't contain every search term and shows a
+// "no match" message when nothing is left. Cards carry their text in data-search.
+function filterGistCards(container, input) {
+  const raw = input.value.trim();
   const terms = raw.toLowerCase().split(/\s+/).filter(Boolean);
-  const cards = listEl.querySelectorAll('.gist-card');
+  const cards = container.querySelectorAll('.gist-card');
   let shown = 0;
   cards.forEach((card) => {
     card.hidden = !terms.every((t) => card.dataset.search.includes(t));
     if (!card.hidden) shown++;
   });
 
-  let noMatch = listEl.querySelector('.gists-no-match');
+  let noMatch = container.querySelector('.gists-no-match');
   if (cards.length && !shown) {
     if (!noMatch) {
       noMatch = document.createElement('p');
       noMatch.className = 'empty-state gists-no-match';
-      listEl.appendChild(noMatch);
+      container.appendChild(noMatch);
     }
     noMatch.textContent = `No gists match "${raw}".`;
   } else if (noMatch) {
     noMatch.remove();
   }
 
-  if (!cards.length) return;
-  const noun = `gist${cards.length === 1 ? '' : 's'}`;
-  gistsCountEl.textContent = terms.length
-    ? `Showing ${shown} of ${cards.length} ${noun}.`
-    : `Found ${cards.length} ${noun}.`;
+  return { total: cards.length, shown, filtered: terms.length > 0 };
 }
 
-function openGistSearch() {
-  gistSearchWrap.hidden = false;
-  searchGistsBtn.setAttribute('aria-expanded', 'true');
-  gistSearchInput.focus();
+function applyGistSearch() {
+  const { total, shown, filtered } = filterGistCards(listEl, gistSearchInput);
+  if (!total) return;
+  const noun = `gist${total === 1 ? '' : 's'}`;
+  gistsCountEl.textContent = filtered
+    ? `Showing ${shown} of ${total} ${noun}.`
+    : `Found ${total} ${noun}.`;
 }
 
-function closeGistSearch() {
-  gistSearchWrap.hidden = true;
-  searchGistsBtn.setAttribute('aria-expanded', 'false');
-  gistSearchInput.value = '';
-  applyGistSearch();
+function applySavedGistSearch() {
+  filterGistCards(savedGistsListEl, savedGistSearchInput);
 }
 
-searchGistsBtn.addEventListener('click', () => {
-  if (gistSearchWrap.hidden) openGistSearch();
-  else closeGistSearch();
-});
+function setupSearch(button, wrap, input, apply) {
+  function close() {
+    wrap.hidden = true;
+    button.setAttribute('aria-expanded', 'false');
+    input.value = '';
+    apply();
+  }
 
-gistSearchInput.addEventListener('input', applyGistSearch);
-gistSearchInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeGistSearch();
-});
+  button.addEventListener('click', () => {
+    if (!wrap.hidden) return close();
+    wrap.hidden = false;
+    button.setAttribute('aria-expanded', 'true');
+    input.focus();
+  });
+  input.addEventListener('input', apply);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  });
+
+  return { close };
+}
+
+const gistSearch = setupSearch(searchGistsBtn, gistSearchWrap, gistSearchInput, applyGistSearch);
+const savedGistSearch = setupSearch(savedSearchBtn, savedGistSearchWrap, savedGistSearchInput, applySavedGistSearch);
 
 clearGistsBtn.addEventListener('click', () => {
   setGistsLoaded(false);
@@ -318,8 +334,10 @@ function updateGistBinCount() {
 
 function renderSavedGists() {
   const saved = getSavedGists();
+  savedSearchBtn.hidden = !saved.length;
   if (!saved.length) {
     savedGistsListEl.innerHTML = '<p class="empty-state" style="padding: 1rem 0;">No saved gists yet. Save gists from the list when you fetch them.</p>';
+    savedGistSearch.close();
     return;
   }
   savedGistsListEl.innerHTML = saved
@@ -345,6 +363,11 @@ function renderSavedGists() {
     })
     .join('');
 
+  savedGistsListEl.querySelectorAll('.gist-card').forEach((card, i) => {
+    const g = saved[i];
+    card.dataset.search = [g.files || '', g.description || '', g.id].join(' ').toLowerCase();
+  });
+
   savedGistsListEl.querySelectorAll('.saved-gist-unsave').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -352,6 +375,8 @@ function renderSavedGists() {
       openUnsaveModal(btn.dataset.gistId);
     });
   });
+
+  applySavedGistSearch();
 }
 
 function updateBinCount() {

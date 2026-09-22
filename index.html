@@ -53,6 +53,10 @@
       <div class="section-header-row">
         <h2 class="section-title">Saved gists</h2>
         <button type="button" class="section-arrow-btn" id="savedGistsArrow" aria-label="Show or hide saved gists" aria-expanded="true">▼</button>
+        <button type="button" class="btn-secondary saved-search-btn" id="savedSearchBtn" aria-expanded="false" aria-controls="savedGistSearchWrap">Search</button>
+      </div>
+      <div class="gist-search section-toggle-content" id="savedGistSearchWrap" hidden>
+        <input type="search" id="savedGistSearch" placeholder="Search saved gists by file name, description or ID…" autocomplete="off" aria-label="Search saved gists" />
       </div>
       <div class="saved-gists-list gists-list section-toggle-content" id="savedGistsList"></div>
     </section>

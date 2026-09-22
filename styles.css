@@ -167,6 +167,7 @@ h1 {
   cursor: pointer;
   transition: transform 0.2s, background 0.15s, color 0.15s;
   flex-shrink: 0;
+  align-self: center;
 }
 
 .section-arrow-btn:hover {
@@ -247,6 +248,15 @@ h1 {
 
 .gist-search {
   margin-bottom: 0.75rem;
+}
+
+.saved-search-btn {
+  margin-left: auto;
+  align-self: center;
+}
+
+.saved-gists.is-collapsed .saved-search-btn {
+  display: none;
 }
 
 .token-list {
