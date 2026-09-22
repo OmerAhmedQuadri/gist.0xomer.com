@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitHub Gists - Public & Private</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <div>
+        <h1>GitHub Gists</h1>
+        <p class="subtitle">List all public and private gists for your account using a personal access.</p>
+      </div>
+      <div class="options-wrap">
+        <button type="button" class="btn-secondary" id="optionsBtn" aria-haspopup="true" aria-expanded="false">Options</button>
+        <div class="options-dropdown" id="optionsDropdown" role="menu">
+          <button type="button" class="options-dropdown-item" id="openBinBtn" role="menuitem">Token bin<span class="bin-count" id="binCount"></span></button>
+          <button type="button" class="options-dropdown-item" id="openGistBinBtn" role="menuitem">Gist bin<span class="bin-count" id="gistBinCount"></span></button>
+        </div>
+      </div>
+    </div>
+
+    <form class="form" id="form">
+      <div class="form-row">
+        <div class="input-wrap" style="min-width: 140px;">
+          <label for="name">Name (optional)</label>
+          <input type="text" id="name" name="name" placeholder="Name" autocomplete="off" />
+        </div>
+        <div class="input-wrap" style="flex: 2; min-width: 200px;">
+          <label for="token">GitHub token (PAT)</label>
+          <input type="password" id="token" name="token" placeholder="ghp_xxxx…" autocomplete="off" />
+        </div>
+        <button type="submit" id="submitBtn" class="btn-secondary">Fetch gists</button>
+      </div>
+    </form>
+
+    <div class="status" id="status"></div>
+
+    <section class="saved-tokens" id="savedTokensSection">
+      <div class="section-header-row">
+        <h2 class="section-title">Saved tokens</h2>
+        <button type="button" class="section-arrow-btn" id="savedTokensArrow" aria-label="Show or hide saved tokens" aria-expanded="true">▼</button>
+      </div>
+      <div class="token-list section-toggle-content" id="tokenList"></div>
+    </section>
+
+    <section class="saved-gists" id="savedGistsSection">
+      <div class="section-header-row">
+        <h2 class="section-title">Saved gists</h2>
+        <button type="button" class="section-arrow-btn" id="savedGistsArrow" aria-label="Show or hide saved gists" aria-expanded="true">▼</button>
+      </div>
+      <div class="saved-gists-list gists-list section-toggle-content" id="savedGistsList"></div>
+    </section>
+
+    <section class="gists-section" id="gistsSection">
+      <div class="gists-section-header">
+        <div class="title-row">
+          <h2>Gists</h2>
+          <span class="gists-count" id="gistsCount"></span>
+        </div>
+        <button type="button" class="btn-secondary" id="clearGistsBtn">Clear</button>
+      </div>
+      <div class="gists-list" id="gistsList"></div>
+    </section>
+  </div>
+
+  <div class="modal-overlay" id="deleteModal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-labelledby="deleteModalTitle">
+      <h3 id="deleteModalTitle">Remove token?</h3>
+      <p id="deleteModalMessage">Remove this token from saved tokens?</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="deleteModalCancel">Cancel</button>
+        <button type="button" class="btn-secondary delete-modal-confirm" id="deleteModalConfirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="unsaveModal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-labelledby="unsaveModalTitle">
+      <h3 id="unsaveModalTitle">Remove from saved?</h3>
+      <p id="unsaveModalMessage">Remove this gist from your saved gists?</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="unsaveModalCancel">Cancel</button>
+        <button type="button" class="btn-secondary unsave-modal-confirm" id="unsaveModalConfirm">Unsave</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="binModal" aria-hidden="true">
+    <div class="modal-dialog bin-modal-dialog" role="dialog" aria-labelledby="binModalTitle">
+      <div class="bin-modal-header">
+        <h3 id="binModalTitle">Token bin</h3>
+        <button type="button" class="bin-close" id="binModalClose" aria-label="Close">&times;</button>
+      </div>
+      <p class="bin-modal-desc">Deleted tokens. Restore to saved tokens or delete permanently.</p>
+      <div class="bin-list" id="binList"></div>
+      <div class="bin-empty" id="binEmpty">No deleted tokens.</div>
+      <div class="modal-actions bin-modal-actions">
+        <button type="button" class="btn-secondary" id="binModalCloseBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="gistBinModal" aria-hidden="true">
+    <div class="modal-dialog bin-modal-dialog" role="dialog" aria-labelledby="gistBinModalTitle">
+      <div class="bin-modal-header">
+        <h3 id="gistBinModalTitle">Gist bin</h3>
+        <button type="button" class="bin-close" id="gistBinModalClose" aria-label="Close">&times;</button>
+      </div>
+      <p class="bin-modal-desc">Unsaved gists. Restore to saved gists or delete permanently.</p>
+      <div class="bin-list" id="gistBinList"></div>
+      <div class="bin-empty" id="gistBinEmpty">No unsaved gists.</div>
+      <div class="modal-actions bin-modal-actions">
+        <button type="button" class="btn-secondary" id="gistBinModalCloseBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
