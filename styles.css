@@ -240,6 +240,15 @@ h1 {
   color: var(--text-muted);
 }
 
+.gists-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.gist-search {
+  margin-bottom: 0.75rem;
+}
+
 .token-list {
   display: flex;
   flex-direction: column;
@@ -351,7 +360,8 @@ label {
 }
 
 input[type="password"],
-input[type="text"] {
+input[type="text"],
+input[type="search"] {
   width: 100%;
   padding: 0.65rem 0.9rem;
   background: var(--surface);
@@ -565,6 +575,10 @@ button:disabled {
   text-align: center;
   padding: 3rem 1rem;
   color: var(--text-muted);
+}
+
+.gists-list > .empty-state {
+  grid-column: 1 / -1;
 }
 
 .modal-overlay {

@@ -63,7 +63,13 @@
           <h2>Gists</h2>
           <span class="gists-count" id="gistsCount"></span>
         </div>
-        <button type="button" class="btn-secondary" id="clearGistsBtn">Clear</button>
+        <div class="gists-actions">
+          <button type="button" class="btn-secondary" id="searchGistsBtn" aria-expanded="false" aria-controls="gistSearchWrap">Search</button>
+          <button type="button" class="btn-secondary" id="clearGistsBtn">Clear</button>
+        </div>
+      </div>
+      <div class="gist-search" id="gistSearchWrap" hidden>
+        <input type="search" id="gistSearch" placeholder="Search by file name, description or ID…" autocomplete="off" aria-label="Search gists" />
       </div>
       <div class="gists-list" id="gistsList"></div>
     </section>
