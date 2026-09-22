@@ -422,17 +422,18 @@ button:disabled {
 
 .gists-list {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
 }
 
 @media (max-width: 600px) {
   .gists-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 .gist-card {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -446,25 +447,22 @@ button:disabled {
 
 .gist-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
   flex-wrap: wrap;
   margin-bottom: 0.5rem;
+  padding-right: 2rem;
 }
 
 .gist-header .gist-link {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.gist-header .save-gist-btn {
-  flex-shrink: 0;
+  overflow-wrap: anywhere;
 }
 
 .gist-card .save-gist-btn {
-  margin-left: auto;
+  position: absolute;
+  top: 0.875rem;
+  right: 0.875rem;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.15s;
@@ -478,7 +476,6 @@ button:disabled {
   color: var(--text-muted);
   border: none;
   border-radius: 4px;
-  flex-shrink: 0;
 }
 
 .gist-card .save-gist-btn .save-gist-icon {
@@ -556,16 +553,12 @@ button:disabled {
   color: var(--text-muted);
 }
 
-.gist-files {
+.gist-id {
   margin-top: 0.5rem;
+  overflow-wrap: anywhere;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.8rem;
   color: var(--text-muted);
-}
-
-.gist-files span {
-  display: inline-block;
-  margin-right: 0.75rem;
 }
 
 .empty-state {

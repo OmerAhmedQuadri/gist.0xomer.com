@@ -276,13 +276,13 @@ function renderSavedGists() {
       return `
         <article class="gist-card" data-gist-id="${g.id}">
           <div class="gist-header">
-            <a class="gist-link" href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(g.id)}</a>
+            <a class="gist-link" href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(fileList)}</a>
             <span class="badge ${isPublic ? 'public' : 'private'}">${isPublic ? 'Public' : 'Private'}</span>
             <span class="badge saved-badge">Saved</span>
             <button type="button" class="save-gist-btn is-saved saved-gist-unsave" data-gist-id="${g.id}" title="Unsave" aria-label="Unsave">${saveIconSvg('saved')}</button>
           </div>
           <div class="gist-desc ${!desc ? 'empty' : ''}">${escapeHtml(desc) || 'No description'}</div>
-          <div class="gist-files"><span>${escapeHtml(fileList)}</span></div>
+          <div class="gist-id">${escapeHtml(g.id)}</div>
           <div class="gist-meta">Created ${escapeHtml(created)}</div>
         </article>
       `;
@@ -614,13 +614,13 @@ function renderGists(gists) {
       return `
         <article class="gist-card" data-gist-id="${g.id}">
           <div class="gist-header">
-            <a class="gist-link" href="${g.html_url}" target="_blank" rel="noopener">${g.id}</a>
+            <a class="gist-link" href="${escapeHtml(g.html_url)}" target="_blank" rel="noopener">${escapeHtml(fileList)}</a>
             <span class="badge ${isPublic ? 'public' : 'private'}">${isPublic ? 'Public' : 'Private'}</span>
             ${isSaved ? '<span class="badge saved-badge">Saved</span>' : ''}
             <button type="button" class="save-gist-btn ${isSaved ? 'is-saved' : ''}" data-gist-id="${g.id}" data-gist-url="${saveDataUrl}" data-gist-desc="${saveDataDesc}" data-gist-created="${g.created_at}" data-gist-files="${saveDataFiles}" data-gist-public="${saveDataPublic}" title="${isSaved ? 'Saved' : 'Save gist'}" aria-label="${isSaved ? 'Saved' : 'Save gist'}">${isSaved ? saveIconSvg('saved') : saveIconSvg('unsaved')}</button>
           </div>
-          <div class="gist-desc ${!desc ? 'empty' : ''}">${desc || 'No description'}</div>
-          <div class="gist-files"><span>${fileList}</span></div>
+          <div class="gist-desc ${!desc ? 'empty' : ''}">${escapeHtml(desc) || 'No description'}</div>
+          <div class="gist-id">${escapeHtml(g.id)}</div>
           <div class="gist-meta">Created ${new Date(g.created_at).toLocaleString()}</div>
         </article>
       `;
